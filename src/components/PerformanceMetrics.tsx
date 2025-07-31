@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
-import { fetchPerformanceMetrics } from "@/services/mockApi";
+import { fetchPerformanceMetrics } from "@/services/api";
 import { Loader2, TrendingUp, Activity, Target, BarChart3 } from "lucide-react";
 
 export const PerformanceMetrics = () => {

@@ -1,0 +1,33 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+      nodejs: 18
+    commands:
+      - echo Installing dependencies...
+      - pip install -r requirements.txt
+      - npm install
+      
+  pre_build:
+    commands:
+      - echo Running tests...
+      - pytest tests/ --cov=app --cov-report=html
+      - echo Building application...
+      
+  build:
+    commands:
+      - echo Building SAM application...
+      - sam build
+      
+  post_build:
+    commands:
+      - echo Build completed successfully!
+
+artifacts:
+  files:
+    - .aws-sam/**/*
+    - template.yaml
+    - samconfig.toml
+  discard-paths: no 

@@ -1,0 +1,82 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Regime-Switching Trading Engine
+
+Globals:
+  Function:
+    Timeout: 300
+    MemorySize: 1024
+    Runtime: python3.11
+    Environment:
+      Variables:
+        SYMBOL: SPY
+        PYTHONPATH: /var/task
+
+Resources:
+  # DynamoDB Table for caching
+  TradingDataTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: trading-data-cache
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: symbol
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: S
+      KeySchema:
+        - AttributeName: symbol
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+
+  # Lambda Function
+  TradingEngineFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: app/
+      Handler: lambda_handler.lambda_handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TradingDataTable
+        - CloudWatchLogsFullAccess
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: !Ref TradingDataTable
+          SYMBOL: SPY
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+            RestApiId: !Ref TradingApi
+
+  # API Gateway
+  TradingApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      Cors:
+        AllowMethods: "'GET,POST,OPTIONS'"
+        AllowHeaders: "'Content-Type'"
+        AllowOrigin: "'*'"
+
+  # CloudWatch Log Group
+  TradingEngineLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${TradingEngineFunction}
+      RetentionInDays: 14
+
+Outputs:
+  ApiUrl:
+    Description: API Gateway endpoint URL
+    Value: !Sub https://${TradingApi}.execute-api.${AWS::Region}.amazonaws.com/prod/
+  
+  DynamoDBTable:
+    Description: DynamoDB table name
+    Value: !Ref TradingDataTable 

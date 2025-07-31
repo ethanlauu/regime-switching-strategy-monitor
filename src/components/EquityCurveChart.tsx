@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
-import { fetchEquityCurve } from "@/services/mockApi";
+import { fetchEquityCurve } from "@/services/api";
 import { Loader2 } from "lucide-react";
 
 export const EquityCurveChart = () => {

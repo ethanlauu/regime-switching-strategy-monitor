@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
-import { fetchRegimeData } from "@/services/mockApi";
+import { fetchRegimeData } from "@/services/api";
 import { Loader2 } from "lucide-react";
 
 export const RegimeProbabilityChart = () => {

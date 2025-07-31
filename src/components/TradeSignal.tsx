@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { fetchTradeSignal } from "@/services/mockApi";
+import { fetchTradeSignal } from "@/services/api";
 import { Loader2, TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 export const TradeSignal = () => {
